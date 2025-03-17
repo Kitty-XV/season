@@ -1,0 +1,169 @@
+:root {
+    --spring-color: #f8c3cd;
+    --summer-color: #1eb980;
+    --autumn-color: #e08e45;
+    --winter-color: #d4f1f9;
+    --sidebar-width: 320px;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: 'Noto Sans SC', sans-serif;
+    background-color: #000;
+    height: 100%;
+    width: 100%;
+}
+
+#scene-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.season-name {
+    position: fixed;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Noto Serif SC', serif;
+    font-size: 4rem;
+    font-weight: 700;
+    text-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    transition: color 1s ease;
+    opacity: 0.7;
+}
+
+.spring { color: var(--spring-color); }
+.summer { color: var(--summer-color); }
+.autumn { color: var(--autumn-color); }
+.winter { color: var(--winter-color); }
+
+#controls {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    z-index: 100;
+}
+
+.season-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.season-btn:hover {
+    transform: scale(1.1);
+}
+
+.season-btn.active {
+    transform: scale(1.15);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+#spring-btn { border-color: var(--spring-color); }
+#spring-btn.active { background-color: var(--spring-color); color: #000; }
+
+#summer-btn { border-color: var(--summer-color); }
+#summer-btn.active { background-color: var(--summer-color); color: #000; }
+
+#autumn-btn { border-color: var(--autumn-color); }
+#autumn-btn.active { background-color: var(--autumn-color); color: #000; }
+
+#winter-btn { border-color: var(--winter-color); }
+#winter-btn.active { background-color: var(--winter-color); color: #000; }
+
+/* 日夜切换按钮样式 */
+#day-night-btn {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+#day-night-btn:hover {
+    transform: scale(1.1);
+}
+
+#day-night-btn i {
+    font-size: 1.5rem;
+}
+
+/* 星星闪烁动画 */
+@keyframes twinkle {
+    0% { opacity: 0.2; }
+    50% { opacity: 1; }
+    100% { opacity: 0.2; }
+}
+
+.instructions {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    max-width: 300px;
+    z-index: 50;
+    transition: opacity 1s ease;
+}
+
+.instructions h3 {
+    margin-top: 0;
+    font-family: 'Noto Serif SC', serif;
+}
+
+.label {
+    position: absolute;
+    color: white;
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 10px;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+    transform: translate(-50%, -100%);
+    opacity: 0;
+}
+
+@media (max-width: 768px) {
+    .season-name {
+        font-size: 2.5rem;
+    }
+    
+    .instructions {
+        max-width: 250px;
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+} 
