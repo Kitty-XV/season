@@ -96,9 +96,11 @@ class OrbitControls {
         event.preventDefault();
         
         if (event.deltaY < 0) {
-            this.scale /= 0.95;
+            // 滚轮向上滚动，放大
+            this.scale *= 0.95; // 修正：与触摸缩放保持一致
         } else {
-            this.scale *= 0.95;
+            // 滚轮向下滚动，缩小
+            this.scale /= 0.95; // 修正：与触摸缩放保持一致
         }
         
         this.zoomChanged = true;
@@ -162,10 +164,10 @@ class OrbitControls {
             if (this.touchZoomDistanceStart > 0) {
                 if (touchZoomDistanceEnd > this.touchZoomDistanceStart) {
                     // 手指分开，放大
-                    this.scale /= 0.95;
+                    this.scale *= 0.95;
                 } else {
                     // 手指靠拢，缩小
-                    this.scale *= 0.95;
+                    this.scale /= 0.95;
                 }
                 this.zoomChanged = true;
                 this.touchZoomDistanceStart = touchZoomDistanceEnd;
