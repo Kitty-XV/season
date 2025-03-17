@@ -5,6 +5,15 @@
  */
 (function() {
     /**
+     * 检测是否为移动设备
+     * @returns {boolean} 是否为移动设备
+     */
+    function isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+               window.innerWidth < 768;
+    }
+    
+    /**
      * 初始化交互事件
      */
     function initEvents() {
@@ -32,12 +41,27 @@
                 instructions.style.opacity = '0.7';
                 setTimeout(() => {
                     instructions.style.opacity = '0';
-                }, 3000);
+                }, 5000); // 延长在移动设备上的显示时间
             }
         });
         
         // 在场景中显示标签
-        renderer.domElement.addEventListener('mousemove', showLabelsOnHover);
+        if (!isMobileDevice()) {
+            // 鼠标移动显示标签只在桌面设备上启用
+            renderer.domElement.addEventListener('mousemove', showLabelsOnHover);
+        } else {
+            // 在移动设备上，点击显示标签
+            renderer.domElement.addEventListener('touchstart', function(event) {
+                if (event.touches.length === 1) {
+                    const touch = event.touches[0];
+                    const fakeEvent = {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY
+                    };
+                    showLabelsOnHover(fakeEvent);
+                }
+            });
+        }
         
         // 添加窗口调整事件监听器
         window.addEventListener('resize', onWindowResize);
@@ -60,7 +84,7 @@
         controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.dampingFactor = 0.05;
-        controls.rotateSpeed = 0.7;
+        controls.rotateSpeed = isMobileDevice() ? 0.5 : 0.7; // 移动设备上降低旋转速度
         controls.minDistance = 5;
         controls.maxDistance = 30;
         controls.maxPolarAngle = Math.PI / 2 - 0.1; // 限制相机不能到地面以下
@@ -103,17 +127,37 @@
         // 初始化交互事件
         initEvents();
         
+        // 根据设备类型调整指引
+        updateInstructionsForDevice();
+        
         // 隐藏加载指示器
         const instructions = document.querySelector('.instructions');
         setTimeout(() => {
             instructions.style.opacity = "0.7";
             setTimeout(() => {
                 instructions.style.opacity = "0";
-            }, 10000);
+            }, isMobileDevice() ? 8000 : 5000); // 移动设备上显示更长时间
         }, 2000);
         
         // 开始动画循环
         animate();
+    }
+    
+    /**
+     * 根据设备类型更新交互指南
+     */
+    function updateInstructionsForDevice() {
+        const isMobile = isMobileDevice();
+        const mobileInstructions = document.querySelectorAll('.mobile-only');
+        const desktopInstructions = document.querySelectorAll('.desktop-only');
+        
+        mobileInstructions.forEach(elem => {
+            elem.style.display = isMobile ? 'block' : 'none';
+        });
+        
+        desktopInstructions.forEach(elem => {
+            elem.style.display = isMobile ? 'none' : 'block';
+        });
     }
     
     // 启动应用

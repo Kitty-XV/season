@@ -46,8 +46,10 @@
     <!-- 操作指引 -->
     <div class="instructions">
         <h3>交互指南</h3>
-        <p><i class="fas fa-mouse-pointer"></i> 拖动鼠标旋转场景</p>
-        <p><i class="fas fa-search-plus"></i> 滚轮缩放查看细节</p>
+        <p class="desktop-only"><i class="fas fa-mouse-pointer"></i> 拖动鼠标旋转场景</p>
+        <p class="desktop-only"><i class="fas fa-search-plus"></i> 滚轮缩放查看细节</p>
+        <p class="mobile-only"><i class="fas fa-hand-pointer"></i> 单指滑动旋转场景</p>
+        <p class="mobile-only"><i class="fas fa-expand-arrows-alt"></i> 双指缩放查看细节</p>
     </div>
 
     <!-- 引入Three.js -->
@@ -57,7 +59,6 @@
     
     <!-- 引入自定义JS模块 -->
     <script src="js/utils.js"></script>
-    <script src="js/controls.js"></script>
     <script src="js/objects.js"></script>
     <script src="js/seasons.js"></script>
     <script src="js/scene.js"></script>

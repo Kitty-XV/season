@@ -49,12 +49,18 @@ class OrbitControls {
         this.panEnd = new THREE.Vector2();
         this.panDelta = new THREE.Vector2();
         this.isMouseDown = false;
+        this.isTouching = false;
         
-        // 事件处理
+        // 鼠标事件处理
         this.domElement.addEventListener('mousedown', this.onMouseDown.bind(this));
         this.domElement.addEventListener('mousemove', this.onMouseMove.bind(this));
         this.domElement.addEventListener('mouseup', this.onMouseUp.bind(this));
         this.domElement.addEventListener('wheel', this.onMouseWheel.bind(this));
+        
+        // 触摸事件处理
+        this.domElement.addEventListener('touchstart', this.onTouchStart.bind(this), { passive: false });
+        this.domElement.addEventListener('touchmove', this.onTouchMove.bind(this), { passive: false });
+        this.domElement.addEventListener('touchend', this.onTouchEnd.bind(this));
         
         // 初始化
         this.update();
@@ -98,6 +104,82 @@ class OrbitControls {
         this.zoomChanged = true;
         
         this.update();
+    }
+    
+    /**
+     * 触摸开始事件处理
+     * @param {TouchEvent} event - 触摸事件
+     */
+    onTouchStart(event) {
+        event.preventDefault();
+        this.isTouching = true;
+        
+        // 获取第一个触摸点位置
+        const touch = event.touches[0];
+        this.rotateStart.set(touch.clientX, touch.clientY);
+        
+        // 如果是两个手指触摸，处理缩放
+        if (event.touches.length === 2) {
+            const dx = event.touches[0].clientX - event.touches[1].clientX;
+            const dy = event.touches[0].clientY - event.touches[1].clientY;
+            this.touchZoomDistanceStart = Math.sqrt(dx * dx + dy * dy);
+        }
+    }
+    
+    /**
+     * 触摸移动事件处理
+     * @param {TouchEvent} event - 触摸事件
+     */
+    onTouchMove(event) {
+        event.preventDefault();
+        
+        if (!this.isTouching) return;
+        
+        // 单指触摸处理旋转
+        if (event.touches.length === 1) {
+            const touch = event.touches[0];
+            this.rotateEnd.set(touch.clientX, touch.clientY);
+            this.rotateDelta.subVectors(this.rotateEnd, this.rotateStart);
+            
+            // 触摸旋转速度调整
+            const rotateSpeed = this.rotateSpeed * 0.7; // 触摸时降低旋转速度
+            
+            // 在屏幕坐标系中旋转
+            this.sphericalDelta.theta -= 2 * Math.PI * this.rotateDelta.x / this.domElement.clientHeight * rotateSpeed;
+            this.sphericalDelta.phi -= 2 * Math.PI * this.rotateDelta.y / this.domElement.clientHeight * rotateSpeed;
+            
+            this.rotateStart.copy(this.rotateEnd);
+        } 
+        // 双指触摸处理缩放
+        else if (event.touches.length === 2) {
+            const dx = event.touches[0].clientX - event.touches[1].clientX;
+            const dy = event.touches[0].clientY - event.touches[1].clientY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // 计算缩放比例
+            const touchZoomDistanceEnd = distance;
+            
+            if (this.touchZoomDistanceStart > 0) {
+                if (touchZoomDistanceEnd > this.touchZoomDistanceStart) {
+                    // 手指分开，放大
+                    this.scale /= 0.95;
+                } else {
+                    // 手指靠拢，缩小
+                    this.scale *= 0.95;
+                }
+                this.zoomChanged = true;
+                this.touchZoomDistanceStart = touchZoomDistanceEnd;
+            }
+        }
+        
+        this.update();
+    }
+    
+    /**
+     * 触摸结束事件处理
+     */
+    onTouchEnd() {
+        this.isTouching = false;
     }
     
     update() {

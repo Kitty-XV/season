@@ -88,8 +88,8 @@ function addLights(scene) {
 }
 
 /**
- * 根据鼠标位置显示最近的标签
- * @param {Event} event - 鼠标事件
+ * 根据鼠标或触摸位置显示最近的标签
+ * @param {Event} event - 鼠标或触摸事件
  */
 function showLabelsOnHover(event) {
     // 计算鼠标在归一化设备坐标(NDC)中的位置
@@ -100,6 +100,11 @@ function showLabelsOnHover(event) {
     // 使用光线投射确定鼠标下的对象
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, camera);
+    
+    // 检测设备类型，移动设备上使用更大的触摸响应区域
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   window.innerWidth < 768;
+    const hitThreshold = isMobile ? 0.2 : 0.1; // 触摸设备上提供更大的点击区域
     
     // 更新标签位置
     labels.forEach(label => {
@@ -114,17 +119,55 @@ function showLabelsOnHover(event) {
             );
             
             // 如果鼠标靠近标签点，则显示标签
-            if (distance < 0.1) {
+            if (distance < hitThreshold) {
                 label.element.style.opacity = '1';
+                
+                // 确保标签在移动设备上好阅读
+                const fontSize = isMobile ? '1rem' : '';
+                if (isMobile) {
+                    label.element.style.fontSize = fontSize;
+                }
                 
                 // 转换为屏幕坐标
                 const x = (screenPosition.x + 1) / 2 * window.innerWidth;
                 const y = -(screenPosition.y - 1) / 2 * window.innerHeight;
                 
+                // 移动端优化 - 确保标签不会超出屏幕
+                let posX = x;
+                let posY = y;
+                
+                const labelWidth = label.element.offsetWidth || 200; // 估计的宽度
+                const labelHeight = label.element.offsetHeight || 50; // 估计的高度
+                
+                // 确保标签在水平方向上不超出屏幕
+                if (posX + labelWidth > window.innerWidth) {
+                    posX = window.innerWidth - labelWidth - 10;
+                }
+                if (posX < 0) {
+                    posX = 10;
+                }
+                
+                // 确保标签在垂直方向上不超出屏幕
+                if (posY - labelHeight < 0) {
+                    posY = labelHeight + 10;
+                }
+                if (posY > window.innerHeight) {
+                    posY = window.innerHeight - 10;
+                }
+                
                 // 更新标签位置
-                label.element.style.left = `${x}px`;
-                label.element.style.top = `${y}px`;
-            } else {
+                label.element.style.left = `${posX}px`;
+                label.element.style.top = `${posY}px`;
+                
+                // 在移动设备上，标签显示一定时间后自动消失
+                if (isMobile) {
+                    clearTimeout(label.hideTimeout);
+                    label.hideTimeout = setTimeout(() => {
+                        label.element.style.opacity = '0';
+                    }, 3000); // 3秒后自动隐藏
+                }
+            } else if (!isMobile) {
+                // 在非移动设备上，鼠标移开时立即隐藏
                 label.element.style.opacity = '0';
             }
         }

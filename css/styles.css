@@ -147,6 +147,7 @@ body, html {
     position: absolute;
     color: white;
     font-size: 0.8rem;
+    text-align: center;
     padding: 5px 10px;
     background: rgba(0, 0, 0, 0.6);
     border-radius: 10px;
@@ -154,6 +155,18 @@ body, html {
     transition: opacity 0.5s ease;
     transform: translate(-50%, -100%);
     opacity: 0;
+    z-index: 100;
+    max-width: 200px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 移动端/桌面端显示控制 */
+.mobile-only {
+    display: none;
+}
+
+.desktop-only {
+    display: block;
 }
 
 @media (max-width: 768px) {
@@ -165,5 +178,43 @@ body, html {
         max-width: 250px;
         font-size: 0.9rem;
         padding: 10px;
+    }
+    
+    /* 移动端显示规则 */
+    .mobile-only {
+        display: block;
+    }
+    
+    .desktop-only {
+        display: none;
+    }
+    
+    /* 控制按钮样式调整 */
+    #controls {
+        bottom: 15px;
+        padding: 8px;
+    }
+    
+    .season-btn {
+        width: 36px;
+        height: 36px;
+        margin: 0 5px;
+    }
+    
+    #day-night-btn {
+        width: 36px;
+        height: 36px;
+        right: 15px;
+        bottom: 15px;
+    }
+    
+    /* 移动端标签样式优化 */
+    .label {
+        font-size: 1rem;
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.75);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        max-width: 80%;
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
 } 
